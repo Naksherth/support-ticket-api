@@ -1,0 +1,15 @@
+# Environments
+venv/
+.env
+
+# Compiled files
+__pycache__/
+*.pyc
+
+# Migrations
+migrations/
+
+# IDE settings
+.vscode/
+.idea/
+
