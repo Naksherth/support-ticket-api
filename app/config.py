@@ -1,17 +1,12 @@
 import os
 
-class Config:
-    SECRET_KEY=os.getenv("SECRET_KEY","super-secret-key")
-    SQLALCHEMY_TRACK_MODIFICATIONS=False
+class BaseConfig:
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///dev.db")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "default-secret")
 
-class DevelopmentConfig(Config):
-    DEBUG=True
-    SQLALCHEMY_DATABASE_URI=os.getenv("DEV_DATABASE_URI","sqlite://dev.db")
-    
-class ProductionConfig(Config):
-    DEBUG=False
-    SQLALCHEMY_DATABASE_URI=os.getenv("PROD_DATABASE_URI")
+class DevelopmentConfig(BaseConfig):
+    DEBUG = True
 
-class TestingConfig(Config):
-    TESTING=True
-    SQLALCHEMY_DATABASE_URI="sqlite://:memory:"     
+class ProductionConfig(BaseConfig):
+    DEBUG = False
