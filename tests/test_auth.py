@@ -1,6 +1,11 @@
+import uuid
+
 def test_register_and_login(client, register_user):
-    # Test registration success
-    resp = register_user()
+    unique_id = uuid.uuid4().hex[:6]
+    username = f"testuser_{unique_id}"
+    email = f"test{unique_id}@example.com"
+
+    resp = register_user(username=username, email=email)
     assert resp.status_code == 201
     assert resp.json["msg"] == "User registered successfully"
 
