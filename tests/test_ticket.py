@@ -12,7 +12,7 @@ def test_create_and_get_tickets(client, login_user):
     assert data["title"] == "Issue 1"
     ticket_id = data["id"]
 
-    # Get tickets for user (only their tickets)
+    # Get tickets for the logged-in user (should include created ticket)
     resp = client.get("/tickets", headers={"Authorization": f"Bearer {token}"})
     assert resp.status_code == 200
     tickets = resp.get_json()
@@ -23,7 +23,7 @@ def test_create_and_get_tickets(client, login_user):
 def test_update_ticket(client, login_user):
     token = login_user()
 
-    # Create ticket with valid description length
+    # Create a ticket with valid description length
     resp = client.post("/tickets", json={
         "title": "Old Title",
         "description": "A valid old description"  # >=10 chars
@@ -41,16 +41,16 @@ def test_update_ticket(client, login_user):
 
 
 def test_delete_ticket_forbidden(client, login_user, register_user):
-    # Create admin user and login
-    register_user("admin", "admin@example.com", "adminpass", role="admin")
-    admin_token = login_user("admin", "admin@example.com", "adminpass")
+    # Create admin user and login (unique credentials)
+    register_user("adminuser", "adminuser@example.com", "adminpass", role="admin")
+    admin_token = login_user("adminuser", "adminuser@example.com", "adminpass")
 
-    # Create user1 and user2
-    register_user("user1", "user1@example.com", "pass1", role="user")
-    user1_token = login_user("user1", "user1@example.com", "pass1")
+    # Create user1 and user2 with unique credentials
+    register_user("user1", "user1@example.com", "password1", role="user")
+    user1_token = login_user("user1", "user1@example.com", "password1")
 
-    register_user("user2", "user2@example.com", "pass2", role="user")
-    user2_token = login_user("user2", "user2@example.com", "pass2")
+    register_user("user2", "user2@example.com", "password2", role="user")
+    user2_token = login_user("user2", "user2@example.com", "password2")
 
     # user1 creates a ticket with valid description length
     resp = client.post("/tickets", json={
@@ -60,7 +60,7 @@ def test_delete_ticket_forbidden(client, login_user, register_user):
     assert resp.status_code == 201, resp.get_data(as_text=True)
     ticket_id = resp.get_json()["id"]
 
-    # user2 tries to delete user1's ticket (should fail)
+    # user2 tries to delete user1's ticket (should be forbidden)
     resp = client.delete(f"/tickets/{ticket_id}", headers={"Authorization": f"Bearer {user2_token}"})
     assert resp.status_code == 403
     assert "msg" in resp.get_json()
