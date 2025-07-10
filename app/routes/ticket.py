@@ -4,6 +4,7 @@ from app.models import db, Ticket, AuditLog
 from app.schemas.ticket_schema import TicketSchema
 from datetime import datetime
 from functools import wraps
+from app.extensions import db
 
 ticket_bp = Blueprint('ticket', __name__, url_prefix='/tickets')
 
@@ -77,7 +78,7 @@ def update_ticket(ticket_id):
     claims = get_jwt()
     user_role = claims.get("role", None)
 
-    ticket = Ticket.query.get(ticket_id)
+    ticket = db.session.get(Ticket, ticket_id)
     if not ticket:
         return jsonify({"msg": "Ticket not found"}), 404
 

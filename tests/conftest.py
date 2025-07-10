@@ -21,7 +21,7 @@ def app():
 @pytest.fixture
 def client(app):
     return app.test_client()
-    
+
 @pytest.fixture
 def register_user(client):
     def _register(username="testuser", email="test@example.com", password="testpass", role="user"):
@@ -32,7 +32,7 @@ def register_user(client):
             "role": role
         })
         if response.status_code != 201:
-            print("Registration failed response JSON:", response.get_json())  # <== Add this for debug
+            print("Registration failed response JSON:", response.get_json())
         assert response.status_code == 201, f"Registration failed: {response.get_data(as_text=True)}"
         return response
     return _register
@@ -40,12 +40,23 @@ def register_user(client):
 @pytest.fixture
 def login_user(client, register_user):
     def _login(username="testuser", email="test@example.com", password="testpass", role="user"):
+        # Try login first
+        response = client.post("/auth/login", json={
+            "username": username,
+            "password": password
+        })
+        if response.status_code == 200:
+            token = response.get_json().get("access_token")
+            assert token is not None, "No access_token in login response"
+            return token
+
+        # If login fails, register then login
         register_user(username, email, password, role)
         response = client.post("/auth/login", json={
             "username": username,
             "password": password
         })
-        assert response.status_code == 200, f"Login failed: {response.get_data(as_text=True)}"
+        assert response.status_code == 200, f"Login failed after registration: {response.get_data(as_text=True)}"
         token = response.get_json().get("access_token")
         assert token is not None, "No access_token in login response"
         return token
