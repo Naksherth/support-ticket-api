@@ -74,7 +74,7 @@ def get_tickets():
 @ticket_bp.route('/<int:ticket_id>', methods=['PUT'])
 @jwt_required()
 def update_ticket(ticket_id):
-    user_id = int(get_jwt_identity())  # ✅ ensure it's an integer
+    user_id = int(get_jwt_identity())  
     claims = get_jwt()
     user_role = claims.get("role", None)
 
@@ -82,7 +82,7 @@ def update_ticket(ticket_id):
     if not ticket:
         return jsonify({"msg": "Ticket not found"}), 404
 
-    # ✅ Allow update only if owner or admin
+    #  Allow update only if owner or admin
     if ticket.user_id != user_id and user_role != 'admin':
         return jsonify({"msg": "Forbidden: You can only update your own tickets"}), 403
 

@@ -31,7 +31,7 @@ def register_user(client):
             "password": password,
             "role": role
         })
-        if response.status_code not in (201, 409):  # Allow conflict here
+        if response.status_code not in (201, 409):  
             print("Registration failed response JSON:", response.get_json())
         assert response.status_code in (201, 409), f"Registration failed: {response.get_data(as_text=True)}"
         return response

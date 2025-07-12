@@ -55,7 +55,7 @@ def test_delete_ticket_forbidden(client, login_user, register_user):
     # user1 creates a ticket with valid description length
     resp = client.post("/tickets", json={
         "title": "User1's ticket",
-        "description": "This is a valid description."  # >=10 chars
+        "description": "This is a valid description." 
     }, headers={"Authorization": f"Bearer {user1_token}"})
     assert resp.status_code == 201, resp.get_data(as_text=True)
     ticket_id = resp.get_json()["id"]

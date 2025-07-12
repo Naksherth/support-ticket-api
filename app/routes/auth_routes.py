@@ -65,7 +65,7 @@ def login():
 def me():
     user_id = get_jwt_identity()
     try:
-        user_id = int(user_id)   # Convert the identity to int if stored as string
+        user_id = int(user_id)   
     except ValueError:
         return jsonify({"msg": "Invalid user id in token"}), 400
 

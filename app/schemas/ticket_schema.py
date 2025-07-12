@@ -6,7 +6,7 @@ class TicketSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Ticket
         load_instance = True
-        include_fk = True  # Include foreign keys like user_id
+        include_fk = True 
 
     id = ma.auto_field(dump_only=True)
     title = ma.auto_field(required=True, validate=validate.Length(min=5))
